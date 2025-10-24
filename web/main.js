@@ -7,8 +7,8 @@ import { ResearchController } from './application/ResearchController.js';
 
 // Конфигурация приложения
 const APP_CONFIG = {
-    githubRepo: 'Verbasik/Weekly-arXiv-ML-AI-Research-Review',
-    githubBranch: 'develop' // Или 'main', если ветка называется так
+    githubRepo: 'TensorHub/TH',
+    githubBranch: 'main'
 };
 
 // Главная функция инициализации

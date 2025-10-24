@@ -468,10 +468,10 @@ export class ResearchController {
                 Help improve TWRB: ideas, issues, pull requests — everything matters!
             </p>
             <div class="pixel-flex pixel-gap-2 pixel-mt-2">
-                <a href="https://github.com/Verbasik/Weekly-arXiv-ML-AI-Research-Review" target="_blank" class="pixel-btn pixel-btn--sm">🐙 Repo</a>
-                <a href="https://github.com/Verbasik/Weekly-arXiv-ML-AI-Research-Review/issues/new/choose" target="_blank" class="pixel-btn pixel-btn--sm">📝 Issue</a>
-                <a href="https://github.com/Verbasik/Weekly-arXiv-ML-AI-Research-Review/fork" target="_blank" class="pixel-btn pixel-btn--sm">🍴 Fork & PR</a>
-                <a href="https://github.com/Verbasik/Weekly-arXiv-ML-AI-Research-Review#readme" target="_blank" class="pixel-btn pixel-btn--sm">📖 Readme</a>
+                <a href="https://github.com/TensorHub/TH" target="_blank" class="pixel-btn pixel-btn--sm">🐙 Repo</a>
+                <a href="https://github.com/TensorHub/TH/issues/new/choose" target="_blank" class="pixel-btn pixel-btn--sm">📝 Issue</a>
+                <a href="https://github.com/TensorHub/TH/fork" target="_blank" class="pixel-btn pixel-btn--sm">🍴 Fork & PR</a>
+                <a href="https://github.com/TensorHub/TH#readme" target="_blank" class="pixel-btn pixel-btn--sm">📖 Readme</a>
             </div>
         `;
 
