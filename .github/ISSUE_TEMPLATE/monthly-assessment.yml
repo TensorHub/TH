@@ -1,0 +1,27 @@
+name: Monthly ML Assessment
+description: Ежемесячный опрос по 8 осям ML Radar
+title: "Assessment: {{date | date('YYYY-MM')}}"
+labels: [assessment]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Заполните ответы. После отправки создайте PR с файлом `assessments/responses/YYYY-MM.json`.
+  - type: input
+    id: month
+    attributes:
+      label: Месяц (YYYY-MM)
+      placeholder: 2025-10
+  - type: textarea
+    id: responses
+    attributes:
+      label: Ответы (JSON)
+      description: Список объектов: {axis, difficulty(1..5), correct(bool), weight(optional)}
+      placeholder: |
+        [
+          {"axis":"Математика","difficulty":3,"correct":true},
+          {"axis":"Модели","difficulty":4,"correct":false}
+        ]
+    validations:
+      required: true
+

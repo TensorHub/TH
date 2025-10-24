@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ML Radar — Ежемесячный тест</title>
+  <!-- External CSS Libraries -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.2.0/github-markdown.min.css">
+  <!-- Google Fonts (Inter/IBM) + Pixel Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+  <!-- Pixel Theme (primary) -->
+  <link rel="stylesheet" href="css/pixel-theme.css">
+  <!-- Mobile Optimizations -->
+  <link rel="stylesheet" href="css/mobile-optimizations.css">
+  
+  <!-- MathJax Configuration (same as index.html) -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'noerrors', 'boldsymbol', 'newcommand']}
+      },
+      svg: { fontCache: 'global', scale: 1.1 },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      loader: { load: ['[tex]/ams', '[tex]/noerrors', '[tex]/boldsymbol', '[tex]/newcommand'] },
+      startup: { typeset: false, ready: function(){ MathJax.startup.defaultReady(); } }
+    };
+  </script>
+  <!-- Removed polyfill.io to avoid DNS / supply-chain issues -->
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    .q-card { padding: 12px; border: 1px solid var(--pixel-ink-faint); border-radius: 8px; margin-bottom: 12px; }
+    .q-meta { font-size: 12px; color: var(--pixel-ink-soft); margin-bottom: 6px; }
+    .q-title { font-weight: 600; margin-bottom: 8px; }
+    .q-options label { display: block; margin: 4px 0; }
+    .sticky-bar { position: sticky; top: 0; background: var(--pixel-bg); padding: 8px; z-index: 10; border-bottom: 1px solid var(--pixel-ink-faint); }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 960px) { .grid { grid-template-columns: 1fr 360px; } }
+    .muted { color: var(--pixel-ink-soft); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header class="pixel-p-4">
+    <div class="pixel-container">
+      <div class="pixel-card pixel-card--accent pixel-flex pixel-flex-between pixel-gap-4 hero-card">
+        <div class="pixel-flex-center pixel-gap-3">
+          <div style="font-size: 3rem;">🧭</div>
+          <div>
+            <h1 style="font-family: var(--pixel-font-title); font-size: var(--pixel-font-2xl); margin-bottom: var(--px-unit-half); text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.8);">
+              ML Radar — Тест
+            </h1>
+            <div style="font-family: var(--pixel-font-display); font-size: var(--pixel-font-xs); color: var(--pixel-ink-soft);">
+              Ежемесячная самооценка по 8 осям ML
+            </div>
+          </div>
+        </div>
+        <div class="pixel-flex pixel-flex-wrap pixel-gap-2">
+          <span class="pixel-badge pixel-badge--star" data-icon="⭐">Awesome</span>
+          <span class="pixel-badge pixel-badge--diamond" data-icon="💎">Open Source</span>
+        </div>
+      </div>
+      <div class="pixel-text-center pixel-mt-2" style="font-family: var(--pixel-font-body); font-style: italic; color: var(--pixel-ink-soft);">
+        "Чем больше я знаю, тем больше я понимаю, что ничего не знаю"
+      </div>
+    </div>
+  </header>
+
+  <nav class="pixel-p-3">
+    <div class="pixel-container">
+      <div class="pixel-card pixel-flex-col pixel-gap-2 nav-stack" style="padding: var(--pixel-space-2);">
+        <div class="pixel-flex pixel-flex-wrap pixel-gap-2 nav-actions">
+          <a href="../index.html#home" class="pixel-btn pixel-btn--sm">🏠 Home</a>
+          <div class="pixel-dropdown" style="position: relative; display: inline-block;">
+            <button class="pixel-btn pixel-btn--sm pixel-dropdown-btn" onclick="toggleDropdown()">📅 Years ▼</button>
+            <div class="pixel-dropdown-content" id="yearsDropdown" style="display: none; position: absolute; top: 100%; left: 0; z-index: var(--pixel-z-dropdown); margin-top: var(--px-unit-half);">
+              <div class="pixel-card" style="min-width: 120px; padding: var(--pixel-space-1);">
+                <a href="../index.html#2025" class="pixel-btn pixel-btn--sm" style="width: 100%; margin-bottom: var(--px-unit-half);">2025</a>
+                <a href="../index.html#2024" class="pixel-btn pixel-btn--sm" style="width: 100%;">2024</a>
+              </div>
+            </div>
+          </div>
+          <a href="about.html" class="pixel-btn pixel-btn--sm">ℹ️ About</a>
+          <a href="../index.html#contribute" class="pixel-btn pixel-btn--sm">🤝 Contribute</a>
+          <a href="../index.html#contact" class="pixel-btn pixel-btn--sm">✉️ Contact</a>
+          <div class="nav-lang-inline" aria-label="Language switch">
+            <span class="pixel-badge pixel-badge--star" data-icon="⭐" aria-label="Текущий язык: Русский">RU</span>
+            <a href="../index-en.html#home" class="pixel-btn pixel-btn--sm" aria-label="Switch to English">EN</a>
+          </div>
+        </div>
+        <div class="pixel-flex pixel-gap-1 pixel-justify-end nav-search" style="min-width: 200px;">
+          <input type="text" class="pixel-input" placeholder="Search papers..." style="font-size: var(--pixel-font-sm);">
+          <button class="pixel-btn pixel-btn--primary pixel-btn--sm">🔍</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="pixel-container">
+      <div class="pixel-grid pixel-grid-2">
+        <div class="pixel-col">
+          <div class="pixel-card">
+            <div class="sticky-bar pixel-flex pixel-flex-between pixel-gap-2">
+              <div>
+                <strong>Тест за месяц</strong>
+                <span class="muted" id="monthLabel"></span>
+              </div>
+              <div class="pixel-flex pixel-gap-1">
+                <button id="btn-generate" class="pixel-btn pixel-btn--sm">🎲 Сгенерировать 24 вопроса</button>
+                <button id="btn-submit" class="pixel-btn pixel-btn--primary pixel-btn--sm">✅ Завершить и получить JSON</button>
+              </div>
+            </div>
+      <div id="questions" class="pixel-mt-2 tex2jax_process"></div>
+          </div>
+        </div>
+        <div class="pixel-col">
+          <div class="pixel-card">
+            <h4 style="font-family: var(--pixel-font-display);">Результат</h4>
+            <p class="muted">Скопируйте JSON и добавьте в <code>assessments/responses/YYYY-MM.json</code> или вставьте в Issue.</p>
+            <textarea id="output" rows="16" style="width:100%; font-family: ui-monospace, monospace;"></textarea>
+            <div class="pixel-flex pixel-gap-1 pixel-mt-1">
+              <button id="btn-copy" class="pixel-btn pixel-btn--sm">📋 Копировать</button>
+              <button id="btn-download" class="pixel-btn pixel-btn--sm">💾 Скачать</button>
+              <a id="btn-issue" class="pixel-btn pixel-btn--sm" target="_blank" rel="noopener">📝 Issue</a>
+            </div>
+            <div class="pixel-mt-2 muted">
+              Источник вопросов: сэмплы в <code>assessments/questions/samples/</code>. При расширении банка вопросов, страница подхватит их автоматически.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const MONTH = new URLSearchParams(location.search).get('m') || new Date().toISOString().slice(0,7);
+    document.getElementById('monthLabel').textContent = `(${MONTH})`;
+
+    // Банк вопросов: сначала пробуем основной путь assessments/questions/*.jsonl,
+    // если нет — падаем обратно на samples/*.jsonl
+    const BANK = [
+      { axis: 'Математика', slug: 'math' },
+      { axis: 'Данные', slug: 'data' },
+      { axis: 'Задачи', slug: 'tasks' },
+      { axis: 'Парадигмы', slug: 'paradigms' },
+      { axis: 'Модели', slug: 'models' },
+      { axis: 'Обучение', slug: 'training' },
+      { axis: 'Оценка', slug: 'evaluation' },
+      { axis: 'MLOps', slug: 'mlops' }
+    ];
+
+    // MathJax helper for questions (reentrancy-safe)
+    let __typesetInProgress = false;
+    async function typesetMath(container) {
+      if (__typesetInProgress) return;
+      try {
+        if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+          __typesetInProgress = true;
+          MathJax.texReset?.();
+          MathJax.typesetClear?.([container]);
+          await MathJax.typesetPromise([container]);
+        } else {
+          // Retry a bit later if MathJax hasn't loaded yet
+          setTimeout(() => { if (container && container.isConnected) typesetMath(container); }, 200);
+        }
+      } catch (e) {
+        console.warn('MathJax typeset failed:', e);
+      } finally {
+        __typesetInProgress = false;
+      }
+    }
+
+    function parseJSONL(text) {
+      return text.split(/\n+/).filter(Boolean).map(line => { try { return JSON.parse(line); } catch { return null; } }).filter(Boolean);
+    }
+
+    async function loadSamples() {
+      const all = [];
+      for (const spec of BANK) {
+        const primary = `../assessments/questions/${spec.slug}.jsonl`;
+        const fallback = `../assessments/questions/samples/${spec.slug}.jsonl`;
+        let ok = false;
+        for (const url of [primary, fallback]) {
+          try {
+            const resp = await fetch(url, { cache: 'no-store' });
+            if (!resp.ok) continue;
+            const text = await resp.text();
+            const items = parseJSONL(text);
+            items.forEach(q => all.push(q));
+            ok = true;
+            break;
+          } catch (e) { /* ignore and try fallback */ }
+        }
+        if (!ok) {
+          // Нет файла для этой оси — просто пропускаем
+          continue;
+        }
+      }
+      return all;
+    }
+
+    function sample(array, n) {
+      const a = array.slice();
+      const out = [];
+      while (a.length && out.length < n) {
+        const i = Math.floor(Math.random() * a.length);
+        out.push(a.splice(i, 1)[0]);
+      }
+      return out;
+    }
+
+    function renderQuestions(container, items) {
+      container.innerHTML = '';
+      items.forEach((q, idx) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.dataset.qid = q.id;
+        card.dataset.axis = q.axis;
+        card.dataset.difficulty = q.difficulty || 3;
+        const meta = document.createElement('div');
+        meta.className = 'q-meta';
+        meta.textContent = `${q.axis} • ${q.subdomain || ''} • d=${q.difficulty || 3}`;
+        const title = document.createElement('div');
+        title.className = 'q-title';
+        title.textContent = `${idx+1}. ${q.prompt}`;
+        const opts = document.createElement('div');
+        opts.className = 'q-options';
+        if (q.type === 'mcq' && Array.isArray(q.options)) {
+          q.options.forEach((opt, oi) => {
+            const label = document.createElement('label');
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = q.id;
+            input.value = String(oi);
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(' ' + String(opt)));
+            opts.appendChild(label);
+          });
+        } else if (q.type === 'truefalse') {
+          const t = document.createElement('label');
+          const it = document.createElement('input'); it.type='radio'; it.name=q.id; it.value='true';
+          t.appendChild(it); t.appendChild(document.createTextNode(' Верно'));
+          const f = document.createElement('label');
+          const iff = document.createElement('input'); iff.type='radio'; iff.name=q.id; iff.value='false';
+          f.appendChild(iff); f.appendChild(document.createTextNode(' Неверно'));
+          opts.appendChild(t); opts.appendChild(f);
+        } else {
+          const input = document.createElement('input');
+          input.type = 'text'; input.name = q.id; input.placeholder = 'Ответ...';
+          opts.appendChild(input);
+        }
+        // store correct answer for evaluation
+        card.dataset.answer = JSON.stringify(q.answer);
+        card.appendChild(meta); card.appendChild(title); card.appendChild(opts);
+        container.appendChild(card);
+      });
+      // Trigger LaTeX rendering after DOM update
+      typesetMath(container);
+    }
+
+
+    function collectResponses(container) {
+      const cards = Array.from(container.querySelectorAll('.q-card'));
+      const out = [];
+      for (const c of cards) {
+        const id = c.dataset.qid;
+        const axis = c.dataset.axis;
+        const diff = Number(c.dataset.difficulty || 3);
+        const ans = JSON.parse(c.dataset.answer);
+        let correct = false;
+        const radios = container.querySelectorAll(`input[name="${CSS.escape(id)}"][type="radio"]`);
+        if (radios.length) {
+          const sel = Array.from(radios).find(r => r.checked);
+          if (sel) {
+            if (sel.value === 'true' || sel.value === 'false') {
+              correct = (String(ans) === sel.value);
+            } else {
+              correct = (Number(sel.value) === Number(ans));
+            }
+          }
+        } else {
+          const input = container.querySelector(`input[name="${CSS.escape(id)}"]`);
+          if (input) correct = (String(input.value).trim() === String(ans).trim());
+        }
+        out.push({ axis: axis, difficulty: diff, correct: !!correct });
+      }
+      return out;
+    }
+
+    function download(filename, text) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([text], {type:'application/json'}));
+      a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    // Pixel dropdown for Years (copied pattern)
+    function toggleDropdown() {
+      const dropdown = document.getElementById('yearsDropdown');
+      if (!dropdown) return;
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+    window.toggleDropdown = toggleDropdown;
+    document.addEventListener('click', function(event) {
+      const dd = document.querySelector('.pixel-dropdown');
+      const content = document.getElementById('yearsDropdown');
+      if (dd && content && !dd.contains(event.target)) { content.style.display = 'none'; }
+    });
+
+    async function main() {
+      const all = await loadSamples();
+      const qs = document.getElementById('questions');
+      document.getElementById('btn-generate').addEventListener('click', () => {
+        const items = sample(all, 24);
+        renderQuestions(qs, items);
+        document.getElementById('output').value = '';
+      });
+      document.getElementById('btn-submit').addEventListener('click', () => {
+        const responses = collectResponses(qs);
+        const json = JSON.stringify(responses, null, 2);
+        document.getElementById('output').value = json;
+      });
+      document.getElementById('btn-copy').addEventListener('click', async () => {
+        const txt = document.getElementById('output').value;
+        await navigator.clipboard.writeText(txt || '');
+      });
+      document.getElementById('btn-download').addEventListener('click', () => {
+        const txt = document.getElementById('output').value || '[]';
+        download(`${MONTH}.json`, txt);
+      });
+      const repo = encodeURIComponent(window.location.pathname.split('/').slice(1,3).join('/'));
+      const body = encodeURIComponent(`Месяц: ${MONTH}\n\nОтветы JSON:\n\n\`\`\`json\n(вставьте сюда содержимое из формы)\n\`\`\``);
+      const url = `https://github.com/${repo}/issues/new?labels=assessment&title=Assessment:%20${MONTH}&body=${body}`;
+      document.getElementById('btn-issue').href = url;
+    }
+
+    main();
+  </script>
+</body>
+</html>

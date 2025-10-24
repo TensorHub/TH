@@ -1,0 +1,20 @@
+{
+  "years": [
+    {
+      "year": "2025",
+      "weeks": [
+        {
+          "week": "0001-DeepSeek-OCR",
+          "title": "DeepSeek-OCR: Contexts Optical Compression",
+          "date": "2025-10-22",
+          "tags": ["OCR", "Document Understanding", "Vision", "DeepSeek"],
+          "description": "Review and analysis of the DeepSeek-OCR paper.",
+          "papers": 1,
+          "paper_path": "research/0001-DeepSeek-OCR/paper/DeepSeek-OCR.pdf",
+          "notebooks": 0,
+          "code": 0
+        }
+      ]
+    }
+  ]
+}
