@@ -65,7 +65,7 @@ export class GitHubDataSource {
     }
 
     /**
-     * Получает markdown контент обзора с поддержкой новой структуры research/<id>/theory/review.md
+     * Получает markdown контент обзора с поддержкой новой структуры research/<id>/review/review.md
      * и обратной совместимостью со старым путём /<year>/<weekId>/review.md
      */
     async fetchMarkdown(yearNumber, weekId) {
@@ -81,9 +81,9 @@ export class GitHubDataSource {
         const baseUrls = this._getCandidateBaseUrls();
         const candidates = [];
         // New structure first
-        baseUrls.forEach(b => candidates.push(`${b}/research/${weekId}/theory/${preferred}`));
-        if (isEnglish) baseUrls.forEach(b => candidates.push(`${b}/research/${weekId}/theory/${altEn}`));
-        baseUrls.forEach(b => candidates.push(`${b}/research/${weekId}/theory/review.md`));
+        baseUrls.forEach(b => candidates.push(`${b}/research/${weekId}/review/${preferred}`));
+        if (isEnglish) baseUrls.forEach(b => candidates.push(`${b}/research/${weekId}/review/${altEn}`));
+        baseUrls.forEach(b => candidates.push(`${b}/research/${weekId}/review/review.md`));
         // Legacy structure
         baseUrls.forEach(b => candidates.push(`${b}/${yearNumber}/${weekId}/${preferred}`));
         if (isEnglish) baseUrls.forEach(b => candidates.push(`${b}/${yearNumber}/${weekId}/${altEn}`));
