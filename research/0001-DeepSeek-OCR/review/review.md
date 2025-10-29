@@ -59,7 +59,7 @@ DeepEncoder (380 миллионов параметров) состоит из т
 DeepEncoder поддерживает несколько режимов разрешения для размещения различных типов документов и требований к сжатию:
 
 <figure>
-  <img src="https://raw.githubusercontent.com/TensorHub/TH/refs/heads/main/research/0001-DeepSeek-OCR/review/diagrams/Drawing-03.jpeg " alt="Рисунок 4">
+  <img src="https://raw.githubusercontent.com/TensorHub/TH/refs/heads/main/research/0001-DeepSeek-OCR/review/diagrams/Drawing-04.jpeg " alt="Рисунок 4">
   <figcaption>Рисунок 4: Различные режимы разрешения от Tiny (64 токена) до Gundam-Master (поддерживающий сверхвысокое разрешение через тайлинг) с соответствующими выделениями токенов и стратегиями обработки.</figcaption>
 </figure>
 
