@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepEncoder Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .architecture {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        /* Arrow styles */
+        .arrow {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .arrow-line {
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            position: relative;
+        }
+
+        .arrow-head {
+            width: 0;
+            height: 0;
+            border-left: 12px solid #2ecc71;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            margin-left: -1px;
+        }
+
+        .arrow-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            color: #2c3e50;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stage {
+            flex: 1;
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .stage:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: #3498db;
+        }
+
+        .stage-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .stage-subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.85em;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .block {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .block:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .block-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .block-params {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        .block-params code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+            font-size: 0.9em;
+        }
+
+        /* Color coding for different block types */
+        .embedding-block {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-color: #81d4fa;
+        }
+
+        .attention-block {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-color: #ffab91;
+        }
+
+        .transformer-block {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-color: #b39ddb;
+        }
+
+        .conv-block {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            border-color: #64b5f6;
+        }
+
+        .mlp-block {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-color: #ce93d8;
+        }
+
+        .norm-block {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-color: #ffd54f;
+        }
+
+        .neck-block {
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+            border-color: #4dd0e1;
+        }
+
+        /* Nested blocks for detailed views */
+        .detailed-block {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .detailed-title {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detailed-title::before {
+            content: "▶";
+            color: #3498db;
+            font-size: 0.8em;
+        }
+
+        .sub-block {
+            background: #f8f9fa;
+            border-left: 3px solid #3498db;
+            padding: 8px 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+
+        .sub-block-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.85em;
+            margin-bottom: 4px;
+        }
+
+        .sub-block-desc {
+            font-size: 0.75em;
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+
+        .iteration-label {
+            background: #3498db;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .tensor-flow {
+            background: #ecf0f1;
+            border-left: 4px solid #e74c3c;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #2c3e50;
+        }
+
+        .tensor-flow strong {
+            color: #e74c3c;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid #dee2e6;
+        }
+
+        .legend-label {
+            font-size: 0.85em;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        /* Stats panel */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .architecture {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dotted #3498db;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .input-output {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DeepEncoder Architecture</h1>
+        <div class="subtitle">380M Parameters • Hierarchical Visual Compression • Local-to-Global Processing</div>
+
+        <!-- Stats Panel -->
+        <div class="stats-panel">
+            <div class="stat-card">
+                <div class="stat-value">380M</div>
+                <div class="stat-label">Total Parameters</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">16×</div>
+                <div class="stat-label">Compression Ratio</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">148</div>
+                <div class="stat-label">GFLOPs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">97%</div>
+                <div class="stat-label">OCR Accuracy</div>
+            </div>
+        </div>
+
+        <!-- Main Architecture -->
+        <div class="architecture">
+            <!-- Stage 1: SAM-base -->
+            <div class="stage">
+                <div class="stage-title">Stage 1: SAM-base Encoder</div>
+                <div class="stage-subtitle">80M params • Window Attention • High Resolution</div>
+
+                <div class="input-output">
+                    Input: [B, 3, 1024, 1024]
+                </div>
+
+                <!-- Patch Embedding -->
+                <div class="block embedding-block">
+                    <div class="block-title">📊 Patch Embedding</div>
+                    <div class="block-params">
+                        Conv2D: <code>kernel=16, stride=16</code><br>
+                        Channels: <code>3 → 768</code><br>
+                        Output: <code>[B, 64, 64, 768]</code>
+                    </div>
+                </div>
+
+                <!-- Position Embedding -->
+                <div class="block embedding-block">
+                    <div class="block-title">📍 Absolute Position Embedding</div>
+                    <div class="block-params">
+                        Learnable: <code>[1, 64, 64, 768]</code><br>
+                        Interpolation: <code>Bicubic</code><br>
+                        Dynamic resolution support
+                    </div>
+                </div>
+
+                <!-- Transformer Blocks -->
+                <div class="block transformer-block">
+                    <div class="iteration-label">12× Transformer Blocks</div>
+                    
+                    <div class="detailed-block">
+                        <div class="detailed-title">Window Attention Module</div>
+                        
+                        <div class="sub-block">
+                            <div class="sub-block-title">Window Partition</div>
+                            <div class="sub-block-desc">
+                                Window size: <code>14×14</code><br>
+                                Num windows: <code>~25</code><br>
+                                Tokens/window: <code>196</code>
+                            </div>
+                        </div>
+
+                        <div class="sub-block">
+                            <div class="sub-block-title">Multi-Head Self-Attention</div>
+                            <div class="sub-block-desc">
+                                Heads: <code>12</code>, Head dim: <code>64</code><br>
+                                QKV projection: <code>768 → 2304</code><br>
+                                Relative position bias: ✓
+                            </div>
+                        </div>
+
+                        <div class="sub-block">
+                            <div class="sub-block-title">Feed-Forward Network</div>
+                            <div class="sub-block-desc">
+                                Hidden: <code>768 → 3072 → 768</code><br>
+                                Activation: <code>GELU</code><br>
+                                MLP ratio: <code>4.0</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tensor-flow">
+                        <strong>Flow:</strong> [B, 64, 64, 768] → Window Attn → MLP → [B, 64, 64, 768]
+                    </div>
+                </div>
+
+                <!-- Neck Module -->
+                <div class="block neck-block">
+                    <div class="block-title">🔗 Neck Transformation</div>
+                    <div class="block-params">
+                        Conv 1×1: <code>768 → 256</code><br>
+                        LayerNorm2D + Conv 3×3: <code>256 → 256</code><br>
+                        Output: <code>[B, 256, 64, 64]</code>
+                    </div>
+                </div>
+
+                <div class="tensor-flow">
+                    <strong>Stage 1 Output:</strong> [B, 256, 64, 64] = 4096 tokens
+                </div>
+            </div>
+
+            <!-- Stage 2: Token Compressor -->
+            <div class="stage">
+                <div class="stage-title">Stage 2: Token Compressor</div>
+                <div class="stage-subtitle">6M params • 16× Spatial Reduction</div>
+
+                <div class="input-output">
+                    Input: [B, 256, 64, 64]
+                </div>
+
+                <!-- Conv Layer 1 -->
+                <div class="block conv-block">
+                    <div class="block-title">🔽 Compression Conv 1</div>
+                    <div class="block-params">
+                        Conv2D: <code>kernel=3, stride=2, padding=1</code><br>
+                        Channels: <code>256 → 512</code><br>
+                        Params: <code>~1.2M</code><br>
+                        Output: <code>[B, 512, 32, 32]</code>
+                    </div>
+                </div>
+
+                <div class="tensor-flow">
+                    <strong>Reduction:</strong> 2× spatial (4096 → 1024 tokens)
+                </div>
+
+                <!-- Conv Layer 2 -->
+                <div class="block conv-block">
+                    <div class="block-title">🔽 Compression Conv 2</div>
+                    <div class="block-params">
+                        Conv2D: <code>kernel=3, stride=2, padding=1</code><br>
+                        Channels: <code>512 → 1024</code><br>
+                        Params: <code>~4.7M</code><br>
+                        Output: <code>[B, 1024, 16, 16]</code>
+                    </div>
+                </div>
+
+                <div class="tensor-flow">
+                    <strong>Reduction:</strong> 2× spatial (1024 → 256 tokens)
+                </div>
+
+                <!-- Reshape -->
+                <div class="block mlp-block">
+                    <div class="block-title">🔄 Reshape to Sequence</div>
+                    <div class="block-params">
+                        Flatten: <code>[B, 1024, 16, 16]</code><br>
+                        Transpose: <code>[B, 256, 1024]</code><br>
+                        Ready for CLIP processing
+                    </div>
+                </div>
+
+                <div class="tensor-flow">
+                    <strong>Stage 2 Output:</strong> [B, 256, 1024] = 256 tokens
+                </div>
+
+                <div class="block" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-color: #ff6b6b; margin-top: 20px; text-align: center;">
+                    <strong style="color: #2c3e50; font-size: 1.1em;">
+                        ⚡ 16× Compression Achieved ⚡
+                    </strong>
+                    <div style="margin-top: 8px; color: #2c3e50; font-size: 0.9em;">
+                        4096 tokens → 256 tokens
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 3: CLIP-large -->
+            <div class="stage">
+                <div class="stage-title">Stage 3: CLIP-large Encoder</div>
+                <div class="stage-subtitle">300M params • Global Attention • Context Integration</div>
+
+                <div class="input-output">
+                    Input: [B, 256, 1024]
+                </div>
+
+                <!-- MLP Projector -->
+                <div class="block mlp-block">
+                    <div class="block-title">🎯 MLP Projector</div>
+                    <div class="block-params">
+                        Type: <code>normlayer_downsample_mlp_gelu</code><br>
+                        LayerNorm + Linear: <code>1024 → 1024</code><br>
+                        Depth: <code>2-3 layers</code><br>
+                        Params: <code>~2M</code>
+                    </div>
+                </div>
+
+                <!-- CLIP Embeddings -->
+                <div class="block embedding-block">
+                    <div class="block-title">🎭 CLIP Vision Embeddings</div>
+                    <div class="block-params">
+                        CLS token: <code>[B, 1, 1024]</code><br>
+                        Concatenate: <code>[B, 257, 1024]</code><br>
+                        Position embed: <code>[1, 257, 1024]</code><br>
+                        Interpolation: Bicubic for multi-res
+                    </div>
+                </div>
+
+                <!-- Pre LayerNorm -->
+                <div class="block norm-block">
+                    <div class="block-title">📏 Pre-LayerNorm</div>
+                    <div class="block-params">
+                        Normalize: <code>ε = 1e-5</code><br>
+                        Optional: <code>FP32 precision</code>
+                    </div>
+                </div>
+
+                <!-- CLIP Transformer Blocks -->
+                <div class="block transformer-block">
+                    <div class="iteration-label">24× Transformer Blocks</div>
+                    
+                    <div class="detailed-block">
+                        <div class="detailed-title">Global Attention Module</div>
+                        
+                        <div class="sub-block">
+                            <div class="sub-block-title">Multi-Head Global Self-Attention</div>
+                            <div class="sub-block-desc">
+                                Heads: <code>16</code>, Head dim: <code>64</code><br>
+                                QKV projection: <code>1024 → 3072</code><br>
+                                <span class="tooltip" data-tooltip="All 257 tokens attend to each other">Full attention matrix</span>: <code>257×257</code><br>
+                                Flash Attention: <span style="color: #27ae60;">✓ Supported</span>
+                            </div>
+                        </div>
+
+                        <div class="sub-block">
+                            <div class="sub-block-title">Feed-Forward Network</div>
+                            <div class="sub-block-desc">
+                                Hidden: <code>1024 → 4096 → 1024</code><br>
+                                Activation: <code>QuickGELU (x·σ(1.702x))</code><br>
+                                MLP ratio: <code>4.0</code>
+                            </div>
+                        </div>
+
+                        <div class="sub-block">
+                            <div class="sub-block-title">Residual & Normalization</div>
+                            <div class="sub-block-desc">
+                                Pre-norm architecture<br>
+                                Residual connections: ✓<br>
+                                LayerNorm epsilon: <code>1e-5</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tensor-flow">
+                        <strong>Flow:</strong> [B, 257, 1024] → Global Attn → FFN → [B, 257, 1024]
+                    </div>
+                </div>
+
+                <div class="input-output" style="background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); margin-top: 20px;">
+                    Final Output: [B, 257, 1024]
+                </div>
+
+                <div class="tensor-flow">
+                    <strong>Ready for:</strong> LLM Decoder (DeepSeek-3B-MoE)
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <div style="width: 100%; text-align: center; margin-bottom: 15px; font-weight: 600; color: #2c3e50; font-size: 1.1em;">
+                🎨 Layer Type Color Coding
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
+                <div class="legend-label">Embedding Layers</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);"></div>
+                <div class="legend-label">Attention Mechanisms</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);"></div>
+                <div class="legend-label">Transformer Blocks</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);"></div>
+                <div class="legend-label">Convolutional Layers</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);"></div>
+                <div class="legend-label">MLP/Projection Layers</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);"></div>
+                <div class="legend-label">Normalization Layers</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);"></div>
+                <div class="legend-label">Neck/Adapter Modules</div>
+            </div>
+        </div>
+
+        <!-- Technical Details Footer -->
+        <div style="margin-top: 40px; padding: 25px; background: #f8f9fa; border-radius: 15px; border-left: 5px solid #3498db;">
+            <h3 style="color: #2c3e50; margin-bottom: 15px;">⚙️ Technical Specifications</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; font-size: 0.9em; color: #34495e;">
+                <div>
+                    <strong>SAM-base Configuration:</strong><br>
+                    • Depth: 12 layers<br>
+                    • Hidden size: 768<br>
+                    • Attention heads: 12<br>
+                    • Window size: 14×14<br>
+                    • Relative position: ✓
+                </div>
+                <div>
+                    <strong>Token Compressor:</strong><br>
+                    • Architecture: 2-layer CNN<br>
+                    • Total reduction: 16×<br>
+                    • Parameters: ~6M<br>
+                    • Preserves: Semantic info<br>
+                    • Loss: Minimal spatial detail
+                </div>
+                <div>
+                    <strong>CLIP-large Configuration:</strong><br>
+                    • Depth: 24 layers<br>
+                    • Hidden size: 1024<br>
+                    • Attention heads: 16<br>
+                    • Attention type: Global<br>
+                    • Activation: QuickGELU
+                </div>
+                <div>
+                    <strong>Performance Metrics:</strong><br>
+                    • Throughput: 200K+ pages/day<br>
+                    • GPU: Single A100-40G<br>
+                    • Memory: ~8MB activation<br>
+                    • Latency: <100ms/image<br>
+                    • Compression: 97% @ 10× CR
+                </div>
+            </div>
+        </div>
+
+        <!-- Design Philosophy -->
+        <div style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; color: white;">
+            <h3 style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5em;">💡</span> Design Philosophy
+            </h3>
+            <div style="font-size: 0.95em; line-height: 1.8; opacity: 0.95;">
+                <strong>Hierarchical Processing:</strong> The architecture implements a "local-to-global" paradigm where:
+                <br>
+                1️⃣ <strong>SAM-base</strong> captures fine-grained local details using efficient window attention at high resolution
+                <br>
+                2️⃣ <strong>Compressor</strong> aggressively reduces spatial dimensions while preserving semantic information
+                <br>
+                3️⃣ <strong>CLIP-large</strong> integrates global context across all compressed tokens for holistic understanding
+                <br><br>
+                This design achieves an optimal balance between <strong>resolution</strong>, <strong>memory efficiency</strong>, and <strong>contextual understanding</strong> — 
+                enabling high-quality OCR with 16× fewer tokens than traditional approaches.
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 0.9em;">
+            <p>DeepSeek-OCR: Optical Context Compression Architecture</p>
+            <p style="margin-top: 5px;">Interactive visualization • Hover over blocks for details</p>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive hover effects
+        document.querySelectorAll('.block').forEach(block => {
+            block.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px) scale(1.02)';
+            });
+            block.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0) scale(1)';
+            });
+        });
+
+        // Add click to expand detailed blocks
+        document.querySelectorAll('.detailed-block').forEach(block => {
+            block.addEventListener('click', function() {
+                this.style.background = this.style.background === 'rgb(236, 240, 241)' ? 'white' : '#ecf0f1';
+            });
+        });
+
+        // Console log architecture info
+        console.log(`
+╔═══════════════════════════════════════════════════════╗
+║         DeepEncoder Architecture Loaded               ║
+║                                                       ║
+║  Total Parameters: 380M                              ║
+║  Compression Ratio: 16×                              ║
+║  Components: SAM (80M) + Comp (6M) + CLIP (300M)    ║
+║  Token Flow: 4096 → 256 → 257                       ║
+╚═══════════════════════════════════════════════════════╝
+        `);
+    </script>
+</body>
+</html>
