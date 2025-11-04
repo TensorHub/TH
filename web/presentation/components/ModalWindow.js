@@ -208,7 +208,9 @@ export class ModalWindow {
 
             // Отображаем контент
             this.markdownContent.innerHTML = html;
-            // Инициализируем перехват ссылок на GitHub-HTML внутри обзора
+            // Автовстраивание HTML-схем по ссылкам внутри обзора
+            await this._autoEmbedHtmlDiagrams();
+            // Инициализируем перехват ссылок на GitHub-HTML внутри обзора (fallback)
             this._enableInModalHtmlLinks();
             
             // Рендерим MathJax если доступен
@@ -257,6 +259,55 @@ export class ModalWindow {
             
             return false;
         }
+    }
+
+    /**
+     * Находит ссылки на HTML-файлы внутри markdown и встраивает их как iframe с подписью
+     */
+    async _autoEmbedHtmlDiagrams() {
+        if (!this.markdownContent) return;
+        const anchors = Array.from(this.markdownContent.querySelectorAll('a[href$=".html"]'));
+        if (!anchors.length) return;
+
+        const tasks = anchors.map(async (a) => {
+            const href = a.getAttribute('href') || '';
+            // Поддерживаем github blob, raw и относительные пути
+            const rawUrl = this._toRawGithubUrl(href);
+
+            // Контейнер под схему
+            const wrapper = document.createElement('div');
+            wrapper.className = 'embedded-diagram-block';
+            wrapper.innerHTML = `
+                <div class="pixel-text-center" style="margin: var(--pixel-space-2) 0; color: var(--pixel-ink-soft); font-size: var(--pixel-font-sm);">
+                    Схема: ${a.textContent || 'Embedded Diagram'}
+                </div>
+                <div class="pixel-card" style="height: 85vh; overflow: hidden; position: relative;">
+                    <div class="loader" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);"></div>
+                    <iframe class="embedded-frame" src="about:blank" sandbox="allow-same-origin" style="border:0; width: 100%; height: 100%;"></iframe>
+                </div>
+            `;
+
+            // Вставляем блок сразу после ссылки
+            a.insertAdjacentElement('afterend', wrapper);
+
+            try {
+                const res = await fetch(rawUrl, { cache: 'no-store' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const html = await res.text();
+                const iframe = wrapper.querySelector('iframe.embedded-frame');
+                const loader = wrapper.querySelector('.loader');
+                const doc = iframe.contentDocument || iframe.contentWindow?.document;
+                doc.open();
+                doc.write(html);
+                doc.close();
+                loader?.remove();
+            } catch (e) {
+                // Если не удалось — оставляем оригинальную ссылку рабочей
+                console.warn('Failed to embed HTML diagram:', e);
+            }
+        });
+
+        await Promise.allSettled(tasks);
     }
 
     /**
