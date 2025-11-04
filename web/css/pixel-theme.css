@@ -1102,13 +1102,13 @@ nav .nav-stack {
 
 /* Reading Article */
 .reading-article {
-    max-width: none; /* full width reading area */
-    width: 100%;
-    margin: 0 auto;
-    padding: var(--pixel-space-4);
-    background: var(--pixel-surface-primary);
-    border-radius: var(--pixel-radius-lg);
-    box-shadow: var(--pixel-shadow-lg);
+    max-width: none !important; /* force full width */
+    width: 100% !important;
+    margin: 0; /* remove centering */
+    padding: 0; /* rely on container padding */
+    background: transparent; /* no card background */
+    border-radius: 0;
+    box-shadow: none;
     font-family: var(--pixel-font-body);
     font-size: 18px;
     line-height: 1.7;
