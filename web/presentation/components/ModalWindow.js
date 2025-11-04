@@ -329,10 +329,13 @@ export class ModalWindow {
         container.className = 'inmodal-html-view';
         container.innerHTML = `
             <div class="pixel-flex pixel-justify-between pixel-align-center" style="margin: var(--pixel-space-2) 0;">
-                <button class="pixel-btn pixel-btn--sm" data-action="back-to-review">← Back to review</button>
+                <button class="pixel-btn pixel-btn--sm" data-action="back-to-review">⟵ Back to review</button>
                 <span style="font-size: var(--pixel-font-xs); color: var(--pixel-ink-soft);">Embedded: ${rawUrl}</span>
             </div>
-            <div class="pixel-card" style="height: 70vh; overflow: hidden;">
+            <div class="pixel-text-center" style="margin-bottom: var(--pixel-space-2); color: var(--pixel-ink-soft); font-size: var(--pixel-font-sm);">
+                Схема: DeepEncoder Architecture
+            </div>
+            <div class="pixel-card" style="height: 85vh; overflow: hidden;">
                 <iframe class="embedded-frame" src="about:blank" sandbox="allow-same-origin" style="border:0; width: 100%; height: 100%;"></iframe>
             </div>
         `;
