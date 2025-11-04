@@ -421,6 +421,10 @@
     .modal-content {
         border-top-left-radius: var(--border-radius);
         border-top-right-radius: var(--border-radius);
+        width: 100%;
+        max-width: none;
+        padding-left: var(--spacing-3);
+        padding-right: var(--spacing-3);
     }
     
     .modal-title-mobile {
@@ -442,6 +446,11 @@
         background: rgba(0, 0, 0, 0.5);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-left: 4px solid #AA4CE9;
+    }
+    
+    .markdown-body, #markdown-content {
+        max-width: none;
+        width: 100%;
     }
 }
 

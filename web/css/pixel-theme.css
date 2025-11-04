@@ -524,7 +524,9 @@ code, pre, .pixel-mono {
     border-radius: var(--pixel-radius-lg);
     box-shadow: var(--pixel-shadow-xl);
     padding: var(--pixel-space-4);
-    max-width: 900px;
+    padding-left: var(--pixel-space-4);
+    padding-right: var(--pixel-space-4);
+    max-width: none; /* allow full-width modal content */
     max-height: 90vh;
     width: 100%;
     overflow-y: auto;
@@ -541,6 +543,13 @@ code, pre, .pixel-mono {
         background: var(--pixel-accent-primary);
         border-radius: var(--pixel-radius-lg) var(--pixel-radius-lg) 0 0;
     }
+}
+
+/* Ensure markdown stretches full width inside modal */
+.pixel-modal__content #markdown-content,
+.pixel-modal__content .markdown-body {
+    max-width: none;
+    width: 100%;
 }
 
 .pixel-modal__close {
