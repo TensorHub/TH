@@ -1102,7 +1102,8 @@ nav .nav-stack {
 
 /* Reading Article */
 .reading-article {
-    max-width: 72ch; /* Optimal reading width */
+    max-width: none; /* full width reading area */
+    width: 100%;
     margin: 0 auto;
     padding: var(--pixel-space-4);
     background: var(--pixel-surface-primary);
