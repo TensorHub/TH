@@ -528,7 +528,7 @@ code, pre, .pixel-mono {
     padding-right: var(--pixel-space-4);
     max-width: none; /* allow full-width modal content */
     max-height: 90vh;
-    width: 100%;
+    width: 100% !important;
     overflow-y: auto;
     position: relative;
     
@@ -543,6 +543,18 @@ code, pre, .pixel-mono {
         background: var(--pixel-accent-primary);
         border-radius: var(--pixel-radius-lg) var(--pixel-radius-lg) 0 0;
     }
+}
+
+/* Force generic modal-content containers to expand full width */
+.modal-content {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+.modal-content #markdown-content,
+.modal-content .markdown-body {
+    max-width: none !important;
+    width: 100% !important;
 }
 
 /* Ensure markdown stretches full width inside modal */

@@ -642,7 +642,7 @@ export class ResearchController {
         searchModal.style.display = 'flex';
         
         searchModal.innerHTML = `
-            <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-content">
                 <span class="close-modal">×</span>
                 <h2>🔍 Поиск</h2>
                 <p>${message}</p>
