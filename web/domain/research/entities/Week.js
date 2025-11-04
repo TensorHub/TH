@@ -64,7 +64,8 @@ export class Week {
      * Возвращает URL для обзора статьи
      */
     getReviewUrl(githubRepo, branch, year) {
-        return `https://raw.githubusercontent.com/${githubRepo}/${branch}/${year}/${this.week}/review.md`;
+        // Обзоры хранятся по пути: research/{week}/review/review.md
+        return `https://raw.githubusercontent.com/${githubRepo}/${branch}/research/${this.week}/review/review.md`;
     }
 
     /**

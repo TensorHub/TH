@@ -205,9 +205,11 @@ export class ModalWindow {
             
             // Обрабатываем markdown
             const html = await this._processMarkdown(markdown);
-            
+
             // Отображаем контент
             this.markdownContent.innerHTML = html;
+            // Инициализируем перехват ссылок на GitHub-HTML внутри обзора
+            this._enableInModalHtmlLinks();
             
             // Рендерим MathJax если доступен
             await this._renderMathJax();
@@ -255,6 +257,119 @@ export class ModalWindow {
             
             return false;
         }
+    }
+
+    /**
+     * Включает перехват кликов по ссылкам внутри markdown-контента
+     * Ожидаем открытие HTML-файлов из репозитория в iframe внутри модалки
+     */
+    _enableInModalHtmlLinks() {
+        if (!this.markdownContent) return;
+
+        // Делегирование на контейнер
+        this.markdownContent.addEventListener('click', async (e) => {
+            const a = e.target.closest('a');
+            if (!a) return;
+
+            const href = a.getAttribute('href') || '';
+            // Поддержка относительных ссылок внутри markdown: преобразуем к абсолютным GitHub blob ссылкам
+            const isGithubBlob = /https?:\/\/github\.com\/TensorHub\/TH\/blob\/main\//.test(href);
+            const isRaw = /https?:\/\/raw\.githubusercontent\.com\/TensorHub\/TH\/main\//.test(href);
+            const isHtml = href.endsWith('.html');
+
+            if ((isGithubBlob || isRaw || href.endsWith('.html')) && isHtml) {
+                e.preventDefault();
+                try {
+                    const rawUrl = this._toRawGithubUrl(href);
+                    await this._renderHtmlInIframe(rawUrl);
+                } catch (err) {
+                    console.error('Failed to open HTML in modal:', err);
+                    window.open(href, '_blank');
+                }
+            }
+        }, { once: true });
+    }
+
+    /**
+     * Конвертирует GitHub blob/относительный путь в raw.githubusercontent.com URL
+     */
+    _toRawGithubUrl(href) {
+        // Абсолютный raw уже
+        if (/^https?:\/\/raw\.githubusercontent\.com\//.test(href)) return href;
+        // GitHub blob → raw
+        const blobMatch = href.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/);
+        if (blobMatch) {
+            const [, owner, repo, branch, path] = blobMatch;
+            return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+        }
+        // Относительный путь (например, Deepencoder-Architecture.html) → считаем, что путь относителен к обзору research/{week}/review/
+        if (!/^https?:\/\//.test(href)) {
+            // Пытаемся извлечь текущий hash вида #YYYY/WEEKID
+            const hash = window.location.hash.replace('#','');
+            const [year, weekId] = hash.split('/');
+            if (year && weekId) {
+                const basePath = `research/${weekId}/review/`;
+                return `https://raw.githubusercontent.com/TensorHub/TH/main/${basePath}${href}`;
+            }
+            // fallback: трактуем как путь от корня репозитория
+            return `https://raw.githubusercontent.com/TensorHub/TH/main/${href.replace(/^\/+/, '')}`;
+        }
+        // Иной абсолютный URL — возвращаем как есть
+        return href;
+    }
+
+    /**
+     * Рендерит HTML-файл в iframe внутри модального окна с кнопкой Back
+     */
+    async _renderHtmlInIframe(rawUrl) {
+        if (!this.markdownContent) return;
+
+        // Шаблон с кнопкой Back и iframe
+        const container = document.createElement('div');
+        container.className = 'inmodal-html-view';
+        container.innerHTML = `
+            <div class="pixel-flex pixel-justify-between pixel-align-center" style="margin: var(--pixel-space-2) 0;">
+                <button class="pixel-btn pixel-btn--sm" data-action="back-to-review">← Back to review</button>
+                <span style="font-size: var(--pixel-font-xs); color: var(--pixel-ink-soft);">Embedded: ${rawUrl}</span>
+            </div>
+            <div class="pixel-card" style="height: 70vh; overflow: hidden;">
+                <iframe class="embedded-frame" src="about:blank" sandbox="allow-same-origin" style="border:0; width: 100%; height: 100%;"></iframe>
+            </div>
+        `;
+
+        // Сохраняем оригинальный HTML markdown-контента для возврата
+        const original = this.markdownContent.innerHTML;
+        this.markdownContent.innerHTML = '';
+        this.markdownContent.appendChild(container);
+
+        // Loader поверх контейнера
+        const loading = document.createElement('div');
+        loading.className = 'loader';
+        loading.style.margin = '12px auto';
+        this.markdownContent.insertBefore(loading, this.markdownContent.firstChild);
+
+        try {
+            // Загружаем HTML как текст
+            const res = await fetch(rawUrl, { cache: 'no-store' });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const html = await res.text();
+
+            // Пишем HTML в iframe документ
+            const iframe = container.querySelector('iframe.embedded-frame');
+            const doc = iframe.contentDocument || iframe.contentWindow?.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+        } finally {
+            loading.remove();
+        }
+
+        // Back
+        const backBtn = container.querySelector('[data-action="back-to-review"]');
+        backBtn.addEventListener('click', () => {
+            this.markdownContent.innerHTML = original;
+            this._enableInModalHtmlLinks();
+        });
     }
 
     /**
